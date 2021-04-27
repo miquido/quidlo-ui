@@ -60,6 +60,7 @@ const
         black: '#141c26',
         blue: '#4c72f4',
         grey: '#9babaf',
+        lightgrey: '#9aabaf',
         'grey-dark': '#556164',
         ecru: '#e1e3e8',
         transparent: 'transparent'
