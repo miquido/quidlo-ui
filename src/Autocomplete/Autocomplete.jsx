@@ -38,7 +38,9 @@ const
         isLoading,
         showAll,
         clickShowAll,
-        intl
+        intl,
+        errorStyle,
+        selectedChips
     }) => {
         let text;
 
@@ -52,7 +54,7 @@ const
             } else if (selectedOptions.length === 1) {
                 text = selectedOptions[0].labelText;
             } else if (selectedOptions.length > 1) {
-                text = intl.formatMessage(messages.selectedNumber, {number: selectedOptions.length});
+                text = intl.formatMessage(messages.selectedNumber, { number: selectedOptions.length });
             } else if (selectedOptions.length === 0) {
                 text = '';
             }
@@ -66,12 +68,34 @@ const
 
         const optionsToRender = (options.length > DEFAULT_OPTIONLIST_SIZE && showAll ? options : options.slice(0, DEFAULT_OPTIONLIST_SIZE));
 
+        const renderSelectedAsChips = (opts) => {
+            if (!opts || opts.length === 0) return [];
+
+            if (opts.length === 1 || (opts.length === 2 && opts[0].labelText.length <= 5 && opts[1].labelText.length <= 5)) {
+                return opts.map(o => <Tooltip text={o.labelText}><div className={style.chip}>{o.labelText}<div className={style.deleteTag} onClick={() => onSelect(o.value)}></div></div></Tooltip>);
+            }
+
+            if (opts[0].labelText.length <= 4 && opts[1].labelText.length <= 4) {
+                const temp = opts.map(o => <Tooltip text={o.labelText}><div className={style.chip}>{o.labelText}<div className={style.deleteTag} onClick={() => onSelect(o.value)}></div></div></Tooltip>);
+                const chips = temp.slice(0, 2);
+                const tooltipText = opts.map(o => o.labelText);
+                chips.push(<Tooltip text={tooltipText.slice(2, tooltipText.length).join(', ')}><div className={style.chip, style.count}>{`+${opts.length - 2}`}</div></Tooltip>);
+                return chips;
+            }
+
+            const temp = opts.map(o => <Tooltip text={o.labelText}><div className={style.chip}>{o.labelText}<div className={style.deleteTag} onClick={() => onSelect(o.value)}></div></div></Tooltip>);
+            const chips = temp.slice(0, 1);
+            const tooltipText = opts.map(o => o.labelText);
+            chips.push(<Tooltip text={tooltipText.slice(1, tooltipText.length).join(', ')}><div className={style.chip, style.count}>{`+${opts.length - 1}`}</div></Tooltip>);
+            return chips;
+        };
+
         return (
             <div className={cx(style.autocomplete, disabled && style.disabled)} ref={getDropdownMenuRef}>
                 <div
                     className={cx(style.input, !!(selectedOptions.length || inputValue) && style.filled, (error && errorVisibility) && style.error, focusedInput && style.inputActive)}
                 >
-                    <input type="hidden" value="something"/>
+                    <input type="hidden" value="something" />
                     <input
                         onFocus={onFocus}
                         type="text"
@@ -80,15 +104,21 @@ const
                         onChange={e => { onInput(e.target.value); }}
                         autoComplete="new-password"
                     />
-                    <div className={style.text}>
-                        <Tooltip text={selectedOptions.length > 1 ? selectedOptions.map(opt => opt.labelText).join(', ') : ''} >
-                            <div>{!isLoading && text}</div>
-                        </Tooltip>
-                    </div>
+                    {selectedChips ?
+                        !focusedInput && <div className={style.selectedChips}>
+                            {!isLoading && renderSelectedAsChips(selectedOptions)}
+                        </div>
+                        :
+                        <div className={style.text}>
+                            <Tooltip text={selectedOptions.length > 1 ? selectedOptions.map(opt => opt.labelText).join(', ') : ''} >
+                                <div>{!isLoading && text}</div>
+                            </Tooltip>
+                        </div>
+                    }
                     <span className={style.bar} />
                     {label ? <label htmlFor={fieldId}>{label}</label> : null}
                     {placeholder ? <span className={style.hint}>{placeholder}</span> : null}
-                    {errorVisibility && <span className={style.errormessage}>{error}</span>}
+                    {errorVisibility && <span className={style.errormessage} style={errorStyle}>{error}</span>}
                 </div>
                 <TransitionGroup>
                     <CSSTransition
@@ -99,7 +129,7 @@ const
                         unmountOnExit
                     >
                         {focused ? (
-                            <div className={style.optionsContainer} ref={getOptionsContainerRef} style={optionsLength ? {maxHeight: `${56 * optionsLength}px`} : {}}>
+                            <div className={style.optionsContainer} ref={getOptionsContainerRef} style={optionsLength ? { maxHeight: `${56 * optionsLength}px` } : {}}>
                                 {options.length > 0 && onSelectAll && !inputValue &&
                                     <div
                                         className={cx(
@@ -111,7 +141,7 @@ const
                                         )}
                                         id="selectAll"
                                         onClick={() => { onSelectAll(); }}
-                                        onKeyPress={() => {}}
+                                        onKeyPress={() => { }}
                                         ref={ref => { if (activeOption === 'all') getOptionRef(ref); }}
                                     >
                                         <div className={style.check}>
@@ -135,7 +165,7 @@ const
                                                 )}
                                                 id={opt.value}
                                                 onClick={() => { onSelect(opt.value); }}
-                                                onKeyPress={() => {}}
+                                                onKeyPress={() => { }}
                                                 ref={ref => { if (index === activeOption) getOptionRef(ref); }}
                                             >
                                                 <div className={style.check}>
@@ -148,7 +178,7 @@ const
                                         ))}
                                         {(!showAll && options.length > DEFAULT_OPTIONLIST_SIZE) && (
                                             <div className={style.showAll}>
-                                                <Button type="plain" text={intl.formatMessage(messages.showAll, {length: options.length})} onClick={clickShowAll} />
+                                                <Button type="plain" text={intl.formatMessage(messages.showAll, { length: options.length })} onClick={clickShowAll} />
                                             </div>
                                         )}
                                     </div>
@@ -200,7 +230,9 @@ Autocomplete.propTypes = {
     isLoading: PropTypes.bool,
     showAll: PropTypes.bool.isRequired,
     clickShowAll: PropTypes.func.isRequired,
-    intl: PropTypes.object.isRequired
+    intl: PropTypes.object.isRequired,
+    errorStyle: PropTypes.object,
+    selectedChips: PropTypes.bool
 };
 
 Autocomplete.defaultProps = {
@@ -219,7 +251,9 @@ Autocomplete.defaultProps = {
     isMulti: false,
     allSelected: false,
     isLoading: false,
-    optionsLength: undefined
+    optionsLength: undefined,
+    errorStyle: {},
+    selectedChips: false
 };
 
 export default Autocomplete;

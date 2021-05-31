@@ -1,4 +1,4 @@
-import React, {PureComponent} from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl } from 'react-intl';
 import equal from 'deep-equal';
@@ -48,6 +48,7 @@ class AutocompleteContainer extends PureComponent {
         this.getOptionsContainerRef = this.getOptionsContainerRef.bind(this);
         this.getOptionRef = this.getOptionRef.bind(this);
     }
+
 
     componentDidMount() {
         const
@@ -376,7 +377,7 @@ class AutocompleteContainer extends PureComponent {
         }
     }
 
-    changeHandler({value, error}) {
+    changeHandler({ value, error }) {
         if (error !== this.props.error || value !== this.props.value) {
             if (this.props.persistent) {
                 db.LSset(this.props.fieldId, value);
@@ -441,7 +442,7 @@ class AutocompleteContainer extends PureComponent {
 
     clickShowAll() {
         setTimeout(() => {
-            this.setState({showAll: true});
+            this.setState({ showAll: true });
         }, 100);
     }
 
@@ -481,6 +482,9 @@ class AutocompleteContainer extends PureComponent {
             getDropdownMenuRef: this.getDropdownMenuRef,
 
             intl: this.props.intl,
+            errorStyle: this.props.errorStyle,
+
+            selectedChips: this.props.selectedChips
         };
 
         return (
@@ -529,6 +533,9 @@ AutocompleteContainer.propTypes = {
     onBlur: PropTypes.func,
     isLoading: PropTypes.bool,
     intl: PropTypes.object.isRequired,
+    errorStyle: PropTypes.object,
+    errorStyle: {},
+    selectedChips: PropTypes.bool
 };
 
 AutocompleteContainer.defaultProps = {
@@ -551,7 +558,8 @@ AutocompleteContainer.defaultProps = {
     onFocus: undefined,
     onBlur: undefined,
     isLoading: false,
-    optionsLength: undefined
+    optionsLength: undefined,
+    selectedChips: false
 };
 
 export default injectIntl(AutocompleteContainer);

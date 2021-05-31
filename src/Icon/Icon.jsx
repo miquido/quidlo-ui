@@ -49,6 +49,10 @@ import PersonFilter from './svg/person-filter.svg';
 import ViewFilter from './svg/view-filter.svg';
 import ChatbotIcon from './svg/chatbot.svg';
 import IntentsIcon from './svg/intents-filter.svg';
+import CopyLink from './svg/copy-link.svg';
+import DownloadFile from './svg/download-file.svg';
+import Mail from './svg/mail.svg';
+import Clock from './svg/clock.svg';
 
 import style from './Icon.style.scss';
 
@@ -60,7 +64,6 @@ const
         black: '#141c26',
         blue: '#4c72f4',
         grey: '#9babaf',
-        lightgrey: '#9aabaf',
         'grey-dark': '#556164',
         ecru: '#e1e3e8',
         transparent: 'transparent'
@@ -112,7 +115,11 @@ const
         personFilter: <PersonFilter />,
         viewFilter: <ViewFilter />,
         chatbot: <ChatbotIcon />,
-        intents: <IntentsIcon />
+        intents: <IntentsIcon />,
+        copyLink: <CopyLink />,
+        downloadFile: <DownloadFile />,
+        mail: <Mail />,
+        clock: <Clock />
     },
     Icon = ({icon, color, size}) => (
         <div className={cx(style.icon, style[`size-${size}`])} style={{'--color': colors[color] || color}}>
@@ -126,7 +133,7 @@ Icon.propTypes = {
     /** Color of icon strokes. */
     color: PropTypes.string,
     /** Size of icon. */
-    size: PropTypes.oneOf(['extra-small', 'small', 'medium', 'semi-large', 'large'])
+    size: PropTypes.oneOf(['extra-small', 'small', 'medium', 'medium-plus', 'semi-large', 'large'])
 };
 
 Icon.defaultProps = {

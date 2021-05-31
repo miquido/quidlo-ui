@@ -19,7 +19,7 @@ const Animation = ({
     };
 
     return (
-        <div>
+        <div className={className}>
             <Lottie
                 options={defaultOptions}
                 height={height}
@@ -40,7 +40,7 @@ Animation.propTypes = {
 
 Animation.defaultProps = {
     height: 50,
-    width: 50,
+    width: 50
 };
 
 export default Animation;

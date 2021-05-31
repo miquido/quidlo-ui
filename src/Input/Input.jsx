@@ -22,7 +22,8 @@ const Input = ({
     onBlur,
     onKeyDown,
     onFocus,
-    showPassword
+    showPassword,
+    errorStyle
 }) => (
     <div className={cx(style.input, (error && errorVisibility) && style.error, disabled && style.disabled, style[`size-${size}`])}>
         <input
@@ -46,7 +47,7 @@ const Input = ({
         )}
         {label ? <label htmlFor={name}>{label}</label> : null}
         {placeholder ? <span className={style.hint}>{placeholder}</span> : null}
-        {errorVisibility && <span className={style.errormessage}>{error}</span>}
+        {errorVisibility && <span className={style.errormessage} style={errorStyle}>{error}</span>}
         {type === 'password' && (
             <a className={style.showPassword} onClick={showPassword}>
                 <Icon icon="eye" size="small" color="grey" />
@@ -73,6 +74,7 @@ Input.propTypes = {
     errorVisibility: PropTypes.bool,
     passwordVisibility: PropTypes.bool,
     showPassword: PropTypes.func.isRequired,
+    errorStyle: PropTypes.object
 };
 
 Input.defaultProps = {
@@ -86,7 +88,8 @@ Input.defaultProps = {
     disabled: false,
     errorVisibility: false,
     passwordVisibility: false,
-    icon: ''
+    icon: '',
+    errorStyle: {}
 };
 
 export default Input;

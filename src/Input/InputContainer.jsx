@@ -1,9 +1,9 @@
-import React, {PureComponent} from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl } from 'react-intl';
 
 import { timeParser } from '../utils/time';
-import { timeValidator } from '../utils/validators';
+import { timeValidator, hourValidator } from '../utils/validators';
 import db from '../utils/db';
 
 import messages from './InputContainer.i18n';
@@ -35,8 +35,8 @@ class InputContainer extends PureComponent {
 
     componentDidMount() {
         const
-            {persistent, fieldId} = this.props,
-            {error, value} = this.state,
+            { persistent, fieldId } = this.props,
+            { error, value } = this.state,
             savedValue = db.LSget(fieldId),
             newValue = (persistent && savedValue) ? savedValue : this.props.value;
 
@@ -56,7 +56,7 @@ class InputContainer extends PureComponent {
     }
 
     componentWillReceiveProps(newProps) {
-        if (newProps.value !== this.state.value || JSON.stringify(newProps.validators) !== JSON.stringify(this.props.validators) ) {
+        if (newProps.value !== this.state.value || JSON.stringify(newProps.validators) !== JSON.stringify(this.props.validators)) {
             const error = this.validate(newProps.value);
 
             if (error !== this.props.error) {
@@ -124,7 +124,8 @@ class InputContainer extends PureComponent {
                 max,
                 isRequired,
                 isPassword,
-                isTime
+                isTime,
+                isHour
             },
             intl
         } = this.props;
@@ -209,6 +210,16 @@ class InputContainer extends PureComponent {
                 }
 
                 return '';
+            case 'hour':
+                if (isRequired && !val.length) {
+                    return isRequired.error || intl.formatMessage(messages.isRequired);
+                }
+
+                if (isHour && !hourValidator(val)) {
+                    return isHour.error || intl.formatMessage(messages.hourFormatError);
+                }
+
+                return '';
             default:
                 return '';
         }
@@ -216,7 +227,7 @@ class InputContainer extends PureComponent {
 
     changeHandler(event) {
         const
-            {target: {value}} = event,
+            { target: { value } } = event,
             error = this.validate(value);
 
         if (this.props.onChange) {
@@ -265,6 +276,7 @@ class InputContainer extends PureComponent {
             onKeyDown: this.keyDownHandler,
             passwordVisibility: this.state.passwordVisibility,
             showPassword: this.showPassword,
+            errorStyle: this.props.errorStyle
         };
 
         return (
@@ -283,7 +295,7 @@ InputContainer.propTypes = {
     /** Icon string input */
     icon: PropTypes.string,
     /** Input type */
-    type: PropTypes.oneOf(['text', 'number', 'time', 'password']),
+    type: PropTypes.oneOf(['text', 'number', 'time', 'password', 'hour']),
     /** Size of input */
     size: PropTypes.oneOf(['small', 'medium', 'large']),
     /** Input value */
@@ -307,7 +319,8 @@ InputContainer.propTypes = {
     /** Input handler function triggered with delay */
     onDelayedChange: PropTypes.func,
     onKeyDown: PropTypes.func,
-    intl: PropTypes.object.isRequired
+    intl: PropTypes.object.isRequired,
+    errorStyle: PropTypes.object
 };
 
 InputContainer.defaultProps = {
@@ -329,6 +342,7 @@ InputContainer.defaultProps = {
     blurOnEnter: false,
     onDelayedChange: undefined,
     onKeyDown: undefined,
+    errorStyle: {}
 };
 
 export default injectIntl(InputContainer);
