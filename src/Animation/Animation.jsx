@@ -19,13 +19,11 @@ const Animation = ({
     };
 
     return (
-        <div className={className}>
-            <Lottie
-                options={defaultOptions}
-                height={height}
-                width={width}
-            />
-        </div>
+        <Lottie
+            options={defaultOptions}
+            height={height}
+            width={width}
+        />
     );
 };
 
